@@ -1,0 +1,177 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#09090b">
+    <meta name="description" content="Generate free QR codes for text and website links.">
+    <title>QR Studio | QR Code Generator</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header class="topbar">
+    <a class="brand" href="{% url 'generator:home' %}">
+        <span class="brand-icon">▦</span>
+        QR<span class="brand-light">Studio</span>
+    </a>
+    <span class="top-label">
+        <span class="status-dot"></span>
+        FREE QR GENERATOR
+    </span>
+</header>
+
+<main class="container">
+    <section class="hero">
+        <div class="eyebrow">✦ &nbsp; SIMPLE. FAST. FREE.</div>
+        <h1>Your ideas.<br><span>One QR code.</span></h1>
+        <p class="hero-text">
+            Turn any link or text into a scannable QR code in seconds.
+            No account. No hassle.
+        </p>
+    </section>
+
+    <section class="workspace">
+        <div class="panel form-panel">
+            <div class="panel-heading">
+                <div>
+                    <span class="step-label">STEP 01</span>
+                    <h2>Create your QR</h2>
+                </div>
+                <span class="heading-icon">↗</span>
+            </div>
+
+            {% if error %}
+                <div class="error-message" role="alert">{{ error }}</div>
+            {% endif %}
+
+            <form method="post" action="{% url 'generator:home' %}">
+                {% csrf_token %}
+
+                <label for="qr_text">Your content</label>
+                <textarea
+                    id="qr_text"
+                    name="qr_text"
+                    rows="5"
+                    maxlength="2000"
+                    placeholder="Paste a website URL or type anything..."
+                    required
+                >{{ entered_text }}</textarea>
+
+                <div class="field-note">
+                    <span>Links, text and contact details</span>
+                    <span>Max 2000 characters</span>
+                </div>
+
+                <label for="qr_size" class="size-label">QR code size</label>
+                <select id="qr_size" name="qr_size">
+                    <option value="small" {% if qr_size == "small" %}selected{% endif %}>
+                        Small — Compact
+                    </option>
+                    <option value="medium" {% if qr_size == "medium" %}selected{% endif %}>
+                        Medium — Recommended
+                    </option>
+                    <option value="large" {% if qr_size == "large" %}selected{% endif %}>
+                        Large — High resolution
+                    </option>
+                </select>
+
+                <button class="primary-button" type="submit">
+                    Generate QR Code <span>→</span>
+                </button>
+
+                <a class="reset-link" href="{% url 'generator:home' %}">
+                    Clear and start again
+                </a>
+            </form>
+        </div>
+
+        <div class="panel preview-panel">
+            <div class="panel-heading">
+                <div>
+                    <span class="step-label">STEP 02</span>
+                    <h2>Your QR preview</h2>
+                </div>
+                <span class="preview-badge">
+                    {% if qr_image %}READY{% else %}PREVIEW{% endif %}
+                </span>
+            </div>
+
+            <div class="qr-stage">
+                {% if qr_image %}
+                    <div class="qr-paper">
+                        <img src="{{ qr_image }}" alt="Generated QR code">
+                    </div>
+                {% else %}
+                    <div class="empty-qr">
+                        <div class="empty-qr-icon">▦</div>
+                        <span>Your QR code appears here</span>
+                        <small>Enter your content and click generate</small>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if qr_image %}
+                <div class="success-line">
+                    <span class="success-check">✓</span>
+                    QR code generated successfully
+                </div>
+
+                <a class="download-button"
+                   href="{{ qr_image }}"
+                   download="qr-studio-code.png">
+                    <span>↓</span> Download PNG
+                </a>
+
+                <div class="content-preview">
+                    <span class="content-label">ENCODED CONTENT</span>
+                    <p>{{ entered_text }}</p>
+                </div>
+            {% else %}
+                <div class="preview-tip">
+                    <span>✦</span>
+                    Your QR code will appear here and can be downloaded as PNG.
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="feature">
+            <span class="feature-icon">⚡</span>
+            <div>
+                <h3>Instant generation</h3>
+                <p>Create a QR code in seconds.</p>
+            </div>
+        </div>
+
+        <div class="feature">
+            <span class="feature-icon">↓</span>
+            <div>
+                <h3>Easy downloads</h3>
+                <p>Save your QR as a PNG image.</p>
+            </div>
+        </div>
+
+        <div class="feature">
+            <span class="feature-icon">◇</span>
+            <div>
+                <h3>Simple and free</h3>
+                <p>No account required.</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <a class="brand footer-brand" href="{% url 'generator:home' %}">
+        <span class="brand-icon">▦</span>
+        QR<span class="brand-light">Studio</span>
+    </a>
+    <span>Built with Python &amp; Django</span>
+</footer>
+
+</body>
+</html>
